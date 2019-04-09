@@ -33,7 +33,7 @@ export const pleaseLoadPosts = () => async (dispatch: Dispatch): Promise<void> =
     .catch(error => dispatch(loadPostsFailure(error)));
   dispatch(loadUsers());
   setTimeout(() => {
-    fetch("https://jsonplaceholder.typicode.com/users1")
+    fetch("https://jsonplaceholder.typicode.com/users")
       .then(response => {
         if (response.ok) {
           return response.json();
