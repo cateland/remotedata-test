@@ -7,12 +7,10 @@ import { State, Post } from './apptypes';
 import RemoteDataComponent from "./lib/RemoteDataComponent";
 import { RemoteData } from "./lib/remotedata";
 
-import { postWithAuthorName } from './selector';
-
-type PostWithUserName = Post & { username : string}
+import { PostWithUserName, postWithAuthorName } from './selector';
 
 type Props = {
-    posts : RemoteData<string, (Record<"username", string> & Post)[]>
+    posts : RemoteData<string, PostWithUserName[]>
 }
 
 const RemotePostsWithUserName = ({ posts }: Props) => {

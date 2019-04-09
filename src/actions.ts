@@ -26,7 +26,7 @@ export const pleaseLoadPosts = () => async (dispatch: Dispatch): Promise<void> =
       if (response.ok) {
         return response.json();
       } else {
-        throw Error(`Request rejected with status ${response.status}`);
+        return reject(`Request rejected with status ${response.status}`);
       }
     })
     .then(json => dispatch(loadPostsSuccess(json)))
