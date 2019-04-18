@@ -1,9 +1,8 @@
 import * as R from 'ramda';
 
 import { State } from './apptypes';
-import { map2, RemoteData } from './lib/remotedata';
+import * as RemoteData from './lib/remotedata';
 import { Post, User } from './apptypes';
-import update from 'ramda/es/update';
 
 export type PostWithUserName = Post & { username: string };
 
@@ -14,8 +13,10 @@ const findUserName = (id: number, users: User[]): string => {
 
 const userName: string = findUserName(1, [{ id: 1, name: "test" }]);
 
-export const postWithAuthorName = (state: State): RemoteData<string, PostWithUserName[]> => {
-    return map2(state.posts, state.users,
+export const postCount = (state : State): RemoteData.RemoteData<string, number> => state.posts.map(posts => posts.length);
+
+export const postWithAuthorName = (state: State): RemoteData.RemoteData<string, PostWithUserName[]> => {
+    return RemoteData.map2(state.posts, state.users,
         (posts) => (users) => {
             return R.map(post => {
                 const userName = findUserName(post.id, users);

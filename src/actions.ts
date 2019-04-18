@@ -15,18 +15,18 @@ import {
   LOAD_USERS,
   LOAD_USERS_FAILURE,
   LOAD_USERS_SUCCESS,
+  State,
 } from "./apptypes";
-import { reject } from 'q';
 
 
-export const pleaseLoadPosts = () => async (dispatch: Dispatch): Promise<void> => {
+export const pleaseLoadPosts = () => async (dispatch: Dispatch<State>): Promise<void> => {
   dispatch(loadPosts());
   fetch("https://jsonplaceholder.typicode.com/posts")
     .then(response => {
       if (response.ok) {
         return response.json();
       } else {
-        return reject(`Request rejected with status ${response.status}`);
+        return Promise.reject(`Request rejected with status ${response.status}`);
       }
     })
     .then(json => dispatch(loadPostsSuccess(json)))
@@ -38,12 +38,12 @@ export const pleaseLoadPosts = () => async (dispatch: Dispatch): Promise<void> =
         if (response.ok) {
           return response.json();
         } else {
-          return reject(`Request rejected with status ${response.status}`);
+          return Promise.reject(`Request rejected with status ${response.status}`);
         }
       })
       .then(json => dispatch(loadUsersSuccess(json)))
       .catch(error => dispatch(loadUsersFailure(error)));
-  }, 1000);
+  }, 5000);
 }
 
 export function loadPosts(): LoadPosts {

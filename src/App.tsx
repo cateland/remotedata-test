@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { Provider } from "react-redux";
 
-import RemotePost from './RemotePosts';
-import RemotePostCount from './RemotePostCount';
-import RemotePostWithUserName from './RemotePostWithUserName';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import "react-tabs/style/react-tabs.css";
+
+import RemotePost from './example1/RemotePosts';
+import RemotePostCount from './example2/RemotePostCount';
+import RemotePostWithUserName from './example3/RemotePostWithUserName';
 import store from "./store";
 import Load from "./loadbutton";
 import './App.css';
-import findLastIndex from 'ramda/es/findLastIndex';
 
 class App extends Component {
   render() {
@@ -17,13 +19,16 @@ class App extends Component {
           <div className="App">
             <h2>Start editing to see some magic happen!</h2>
             <Load />
-            <div style={{display: 'flex'}}>
-              <RemotePost />
-              <hr />
-              <RemotePostCount />
-              <hr />
-              <RemotePostWithUserName />
-            </div>
+            <Tabs>
+              <TabList>
+                <Tab>Example 1</Tab>
+                <Tab>Example 2</Tab>
+                <Tab>Example 3</Tab>
+              </TabList>
+              <TabPanel><RemotePost /></TabPanel>
+              <TabPanel><RemotePostCount /></TabPanel>
+              <TabPanel><RemotePostWithUserName /></TabPanel>
+            </Tabs>
           </div>
         </Provider>
       </div>

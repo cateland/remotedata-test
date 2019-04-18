@@ -1,6 +1,6 @@
 {
   "include": [
-    "./src/*"
+    "./src/*", "src/example3/RemotePostWithUserName.tsx", "src/example1/RemotePosts.tsx", "src/example1/RemotePostCount.tsx"
   ],
   "compilerOptions": {
     "lib": [

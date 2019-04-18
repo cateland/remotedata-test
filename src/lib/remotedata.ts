@@ -37,10 +37,6 @@ export class NotAsked<E, T> {
     return a
   }
 
-  getOrElseL(f: () => T): T {
-    return f();
-  }
-
   fold<B>(
     onNotAsked: B,
     onLoading: B,
@@ -80,10 +76,6 @@ export class Loading<E, T> {
 
   getOrElse(a: T): T {
     return a
-  }
-
-  getOrElseL(f: () => T): T {
-    return f();
   }
 
   fold<B>(
@@ -127,10 +119,6 @@ export class Failure<E, T> {
     return a
   }
 
-  getOrElseL(f: (l: E) => T): T {
-    return f(this.error)
-  }
-
   fold<B>(
     onNotAsked: B,
     onLoading: B,
@@ -169,10 +157,6 @@ export class Success<E, T> {
   }
 
   getOrElse(a: T): T {
-    return this.value
-  }
-
-  getOrElseL(f: (l: E) => T): T {
     return this.value
   }
 

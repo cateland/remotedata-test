@@ -1,4 +1,4 @@
-import { RemoteData } from "./lib/remotedata";
+import * as RemoteData from "./lib/remotedata";
 
 export type Post = {
   userId: number;
@@ -13,8 +13,8 @@ export type User = {
 }
 
 export type State = {
-  posts: RemoteData<string, Post[]>;
-  users: RemoteData<string, User[]>
+  posts: RemoteData.RemoteData<string, Post[]>;
+  users: RemoteData.RemoteData<string, User[]>
 };
 
 export const LOAD_POSTS = "LOAD_POSTS";
