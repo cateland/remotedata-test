@@ -218,8 +218,12 @@ RemoteData<E, T>::loading: void -> boolean
 RemoteData<E, T>::failure: void -> boolean
 RemoteData<E, T>::success: void -> boolean
 RemoteData<E, T>::map: (T -> B) -> RemoteData<E, B>
+RemoteData<E, T>::bimap: (E -> F) -> (T -> B) -> RemoteData<F,B>
 RemoteData<E, T>::getOrElse: T -> T
 RemoteData<E, T>::fold: B -> B -> (E -> B) -> (T -> B ) -> B
+RemoteData<E, T>::reduce: B -> ((B, T) -> B) -> B
+RemoteData<E, T>::chain: (T -> RemoteData<E, B>) -> RemoteData<E, B>
+RemoteData<E, T>::extend: (RemoteData<E, T> -> B) -> RemoteData<E, B>
 ```
 
 ### RemoteData
@@ -246,17 +250,23 @@ isSuccess: RemoteData<E, T> -> boolean
 ### transformation
 
 ```typescript
-map: RemoteData<E, T> -> (T -> B) -> RemoteData<E, B> 
+map: RemoteData<E, T> -> (T -> B) -> RemoteData<E, B>
+bimap: RemoteData<E, A> -> (E -> F) -> (A -> B) -> RemoteData<F, B>
 ```
 
 ### aggregation
 ```typescript
-andMap: RemoteData<E, A> -> RemoteData<E, (A -> B)> -> RemoteData<E, B>
+ap: RemoteData<E, A> -> RemoteData<E, (A -> B)> -> RemoteData<E, B>
 
 map2: RemoteData<E, A> -> RemoteData<E, B> -> (A -> B -> C) -> RemoteData<E, C>
 map3: RemoteData<E, A> -> RemoteData<E, B> -> RemoteData<E, C> -> (A -> B -> C -> D) -> RemoteData<E, D>
 
 append: RemoteData<E, A> -> RemoteData<E, B> -> RemoteData<E, [A, B]>
+
+reduce: RemoteData<E, A> -> B -> ((B, A) -> B) -> B
+
+chain: RemoteData<E, A> -> (A -> RemoteData<E, B>) -> RemoteData<E, B>
+extend: RemoteData<E, A> -> (RemoteData<E, A> -> B) -> RemoteData<E, B>
 ```
 
 ## run examples

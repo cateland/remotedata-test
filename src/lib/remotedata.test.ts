@@ -85,4 +85,4 @@ describe('map2', () => {
     expect(RemoteData.map2(RemoteData.success('data1'), RemoteData.success('data2'), testfunc))
     .toEqual(RemoteData.success({a:'data1', b:'data2'}));
   });
-})
+});

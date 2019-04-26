@@ -45,6 +45,22 @@ export class NotAsked<E, T> {
   ): B {
     return onNotAsked
   }
+
+  reduce<B>(b: B, f: (b: B, a: T) => B): B {
+    return b
+  }
+
+  bimap<F, B>(f: (e: E) => F, g: (t: T) => B): RemoteData<F, B> {
+    return new NotAsked<F, B>();
+  }
+
+  chain<B>(f: (t: T) => RemoteData<E, B>) : RemoteData<E, B> {
+    return this as any;
+  }
+
+  extend<B>(f: (wa: RemoteData<E, T>) => B): RemoteData<E,B> {
+    return this as any;
+  }
 }
 
 export class Loading<E, T> {
@@ -85,6 +101,22 @@ export class Loading<E, T> {
     onSuccess: (data: T) => B
   ): B {
     return onLoading
+  }
+
+  reduce<B>(b: B, f: (b: B, a: T) => B): B {
+    return b
+  }
+
+  bimap<F, B>(f: (e: E) => F, g: (t: T) => B): RemoteData<F, B> {
+    return new Loading<F, B>();
+  }
+
+  chain<B>(f: (t: T) => RemoteData<E, B>) : RemoteData<E, B> {
+    return this as any;
+  }
+
+  extend<B>(f: (wa: RemoteData<E, T>) => B): RemoteData<E,B> {
+    return this as any;
   }
 }
 
@@ -127,6 +159,22 @@ export class Failure<E, T> {
   ): B {
     return onFailure(this.error)
   }
+
+  reduce<B>(b: B, f: (b: B, a: T) => B): B {
+    return b
+  }
+
+  bimap<F, B>(f: (e: E) => F, g: (t: T) => B): RemoteData<F, B> {
+    return new Failure<F, B>(f(this.error))
+  }
+
+  chain<B>(f: (t: T) => RemoteData<E, B>) : RemoteData<E, B> {
+    return this as any;
+  }
+
+  extend<B>(f: (wa: RemoteData<E, T>) => B): RemoteData<E,B> {
+    return this as any;
+  }
 }
 
 export class Success<E, T> {
@@ -168,6 +216,22 @@ export class Success<E, T> {
   ): B {
     return onSuccess(this.value)
   }
+
+  reduce<B>(b: B, f: (b: B, a: T) => B): B {
+    return f(b, this.value)
+  }
+
+  bimap<F, B>(f: (e: E) => F, g: (t: T) => B): RemoteData<F, B> {
+    return new Success<F, B>(g(this.value))
+  }
+
+  chain<B>(f: (t: T) => RemoteData<E, B>) : RemoteData<E, B> {
+    return f(this.value);
+  }
+
+  extend<B>(f: (wa: RemoteData<E, T>) => B): RemoteData<E,B> {
+    return new Success(f(this))
+  }
 }
 
 export const notAsked = <E, T>(): RemoteData<E, T> => {
@@ -206,23 +270,23 @@ export const isSuccess = <E, T>(fa: RemoteData<E, T>): fa is Success<E, T> => {
   return fa.isSuccess();
 };
 
-export const andMap = <E, A, B>(
-  remoteValue: RemoteData<E, A>,
-  remoteFunction: RemoteData<E, (value: A) => B>
+export const ap = <E, A, B>(
+  fa: RemoteData<E, A>,
+  fb: RemoteData<E, (value: A) => B>
 ): RemoteData<E, B> => {
-  if (remoteFunction.isSuccess() && remoteValue.isSuccess()) {
-    const a = remoteFunction as Success<E, (value: A) => B>;
-    return remoteValue.map(a.value)
+  if (fb.isSuccess() && fa.isSuccess()) {
+    const a = fb as Success<E, (value: A) => B>;
+    return fa.map(a.value)
   }
-  if (remoteFunction.isFailure()) {
-    const a = remoteFunction as Failure<E, (value: A) => B>;
+  if (fb.isFailure()) {
+    const a = fb as Failure<E, (value: A) => B>;
     return failure(a.error);
   }
-  if (remoteValue.isFailure()) {
-    const a = remoteValue as Failure<E, A>;
+  if (fa.isFailure()) {
+    const a = fa as Failure<E, A>;
     return failure(a.error);
   }
-  if (remoteFunction.isLoading() || remoteValue.isLoading()) {
+  if (fb.isLoading() || fa.isLoading()) {
     return loading();
   }
   return notAsked();
@@ -240,7 +304,7 @@ export const map2 = <E, A, B, C>(
   fb: RemoteData<E, B>,
   f: (value1: A) => (value2: B) => C
 ): RemoteData<E, C> => {
-  return andMap(fb, fa.map(f));
+  return ap(fb, fa.map(f));
 };
 
 export const map3 = <E, A, B, C, D>(
@@ -249,12 +313,36 @@ export const map3 = <E, A, B, C, D>(
   fc: RemoteData<E, C>,
   f: (value1: A) => (value2: B) => (value3: C) => D
 ): RemoteData<E, D> => {
-  return andMap(fc, andMap(fb, fa.map(f)));
+  return ap(fc, ap(fb, fa.map(f)));
 }
 
 export const append = <E, A, B>(
   fa: RemoteData<E, A>,
   fb: RemoteData<E, B>
 ): RemoteData<E, [A, B]> => {
-  return andMap(fb, fa.map((a: A) => (b: B): [A, B] => ([a, b])));
+  return ap(fb, fa.map((a: A) => (b: B): [A, B] => ([a, b])));
+}
+
+export const reduce = <E, A, B>(
+  fa: RemoteData<E, A>,
+  b: B,
+  f: (b: B, a: A) => B
+): B => {
+  return fa.reduce(b, f)
+}
+
+export const bimap = <E, A, F, B>(
+  fla: RemoteData<E, A>,
+  f: (e: E) => F,
+  g: (a: A) => B
+): RemoteData<F, B> => {
+  return fla.bimap(f, g)
+}
+
+export const chain = <E, A, B> (ma: RemoteData<E, A>, f: (a: A) => RemoteData<E, B>) : RemoteData<E, B>  => {
+  return ma.chain(f);
+}
+
+export const extend = <E, A, B> (wa: RemoteData<E, A>, f: (a: RemoteData<E, A>) => B) : RemoteData<E, B>  => {
+  return wa.extend(f);
 }
