@@ -272,3 +272,26 @@ extend: RemoteData<E, A> -> (RemoteData<E, A> -> B) -> RemoteData<E, B>
 ## run examples
 
 `yarn && yarn start`
+
+
+## warning
+
+need the following typedef for ramda
+
+```typescript
+    interface Apply<T> {
+        ap<U>(f: Apply<(value: A) => U>): Apply<U>
+    }
+
+    interface Chain<T> {
+        chain<U>(fn: (t: T) => Chain<U>): Chain<U>;
+    }
+
+    ap<T, U>(fb: Apply<T>, fa: Apply<(n: T) => U>): Apply<U>; // used for applicative functors
+    ap<T, U>(fb: Apply<T>): (fa: Apply<(n: T) => U>) => Apply<U>; // used for applicative functors
+
+
+    chain<T, U>(fn: (n: T) => U, obj: Chain<T>): Chain<U>; // used in chains
+    chain<T, U>(fn: (n: T) => U): (obj: Chain<T>) => Chain<U>; // used in chains
+
+```

@@ -13,8 +13,8 @@ import {
 import * as RemoteData from "./lib/remotedata";
 
 const initialState = (): State => ({
-    posts: RemoteData.of(),
-    users: RemoteData.of(),
+    posts: RemoteData.notAsked(),
+    users: RemoteData.notAsked(),
 });
 
 export default function appReducer(

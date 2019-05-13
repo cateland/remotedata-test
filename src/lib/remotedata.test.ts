@@ -86,3 +86,24 @@ describe('map2', () => {
     .toEqual(RemoteData.success({a:'data1', b:'data2'}));
   });
 });
+
+describe('chain',() => {
+  it('chain Success', () => {
+    expect(RemoteData.chain(RemoteData.of('test'), a => RemoteData.of(a))).toEqual(RemoteData.of('test'))
+  });
+
+  it('chain other status', () => {
+    expect(RemoteData.chain(RemoteData.loading(),  a => RemoteData.of(a))).toEqual(RemoteData.loading())
+  });
+});
+
+// TODO https://github.com/fantasyland/fantasy-land#extend
+// describe('extend',() => {
+//   it('extend Success', () => {
+//     expect(RemoteData.extend(RemoteData.of('test'), a => RemoteData.of(a))).toEqual(RemoteData.of('test'))
+//   });
+
+//   it('extend other status', () => {
+//     expect(RemoteData.extend(RemoteData.loading(),  a => RemoteData.of(a))).toEqual(RemoteData.loading())
+//   });
+// });

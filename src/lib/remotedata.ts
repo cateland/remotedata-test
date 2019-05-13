@@ -33,6 +33,10 @@ export class NotAsked<E, T> {
     return this as any;
   }
 
+  ap<B>(fa: RemoteData<E, (a: T) => B>): RemoteData<E, B> {
+    return this as any;
+  }
+
   getOrElse(a: T): T {
     return a
   }
@@ -87,6 +91,10 @@ export class Loading<E, T> {
   }
 
   map<B>(f: (value: T) => B): RemoteData<E, B> {
+    return this as any;
+  }
+
+  ap<B>(fa: RemoteData<E, (a: T) => B>): RemoteData<E, B> {
     return this as any;
   }
 
@@ -147,6 +155,10 @@ export class Failure<E, T> {
     return this as any;
   }
 
+  ap<B>(fa: RemoteData<E, (a: T) => B>): RemoteData<E, B> {
+    return this as any;
+  }
+
   getOrElse(a: T): T {
     return a
   }
@@ -204,6 +216,13 @@ export class Success<E, T> {
     return new Success(f(this.value));
   }
 
+  ap<B>(fa: RemoteData<E, (a: T) => B>): RemoteData<E, B> {
+    if(fa.isSuccess()){
+      return new Success(fa.value(this.value));
+    }
+    return fa as any;
+  }
+
   getOrElse(a: T): T {
     return this.value
   }
@@ -250,7 +269,10 @@ export const success = <E, T>(data: T): RemoteData<E, T> => {
   return new Success<E, T>(data);
 };
 
-export const of = notAsked;
+/**
+ * https://github.com/fantasyland/fantasy-land#functor
+ */
+export const of = success;
 
 export const isNotAsked = <E, T>(
   fa: RemoteData<E, T>
@@ -270,6 +292,10 @@ export const isSuccess = <E, T>(fa: RemoteData<E, T>): fa is Success<E, T> => {
   return fa.isSuccess();
 };
 
+/**
+ * TODO should delegate to the applicative functor ap method.
+ * https://github.com/fantasyland/fantasy-land#apply
+ */
 export const ap = <E, A, B>(
   fa: RemoteData<E, A>,
   fb: RemoteData<E, (value: A) => B>
@@ -292,6 +318,9 @@ export const ap = <E, A, B>(
   return notAsked();
 };
 
+/**
+ * https://github.com/fantasyland/fantasy-land#functor
+ */
 export const map = <E, T, B>(
   fa: RemoteData<E, T>,
   f: (value: T) => B
@@ -323,6 +352,9 @@ export const append = <E, A, B>(
   return ap(fb, fa.map((a: A) => (b: B): [A, B] => ([a, b])));
 }
 
+/**
+ * https://github.com/fantasyland/fantasy-land#foldable
+ */
 export const reduce = <E, A, B>(
   fa: RemoteData<E, A>,
   b: B,
@@ -331,6 +363,9 @@ export const reduce = <E, A, B>(
   return fa.reduce(b, f)
 }
 
+/**
+ * https://github.com/fantasyland/fantasy-land#bifunctor
+ */
 export const bimap = <E, A, F, B>(
   fla: RemoteData<E, A>,
   f: (e: E) => F,
@@ -339,10 +374,18 @@ export const bimap = <E, A, F, B>(
   return fla.bimap(f, g)
 }
 
+/**
+ * https://github.com/fantasyland/fantasy-land#chain
+ */
 export const chain = <E, A, B> (ma: RemoteData<E, A>, f: (a: A) => RemoteData<E, B>) : RemoteData<E, B>  => {
   return ma.chain(f);
 }
 
+/**
+ * https://github.com/fantasyland/fantasy-land#extend
+ * @param wa 
+ * @param f 
+ */
 export const extend = <E, A, B> (wa: RemoteData<E, A>, f: (a: RemoteData<E, A>) => B) : RemoteData<E, B>  => {
   return wa.extend(f);
 }
